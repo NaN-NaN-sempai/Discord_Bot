@@ -1,0 +1,3 @@
+/bots/*
+!/bots/index.js
+!/bots/example.json
