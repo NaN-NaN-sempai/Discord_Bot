@@ -1,18 +1,18 @@
 {
     /* 
-    this file is just a example so ignore the errors, remember to remove the comments when copying 
+    this file is just a example so ignore the errors, remember to remove the comments when copying.
     if you are in VSCode, click on "JSON" in the right bottom corner,
-    then type jsonc and press enter to enable json with comments
+    then type jsonc and press enter to enable json with comments.
     */
 
     "name": "Bot Name",
-    /* ignore is used to jump this bot when running your script must be a bool */
+    /* ignore is used to jump this bot when running your script, must be a bool */
     "ignore": true,
     "token": "Bot Token or Key",
     "color": "Color based on the file 'colorList.txt'",
     "defaultPrefix": "Bot Prefix",
     /* commandsLocation The folder containing this bot commands, for more location just add on the array */
-    "commandsLocaltion": ["location1", "location2"]
+    "commandsLocaltion": ["location1", "location2"],
     /* 
     remember to not have commands with the same prefix in more than one location. 
         Example: 
@@ -20,8 +20,11 @@
             location2 > command: say; 
         
     also remember to copy the index.js file from commands to this location
-    and replace var 'var itemDir = "./bots/"' to you new location
+    and replace var 'var itemDir = "./bots/"' to you new location.
         Example:
             var itemDir = "./myNewLocation/";
     */
+
+    /* is case sensitive, turn commands case sensitive if its trus, must be a bool */
+    "isCaseSensitive": false
 }
