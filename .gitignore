@@ -1,5 +1,7 @@
 /node_modules/*
 
+/betaCommands
+
 /bots/*
 !/bots/index.js
 !/bots/example.json
