@@ -1,7 +1,5 @@
 console.clear();
 var fs = require("fs");
-const { type } = require("os");
-const cmdObj = require("./betaCommands/example");
 var bots = require("./bots");
 var servers = require("./servers");
 
@@ -28,8 +26,9 @@ bots.forEach(botObj => {
         var use = {
             raw: msg,
             content: msg.content,
-            args: msg.content.split(" "),
-            get cmd(){ return msg.content.replace(use.server.prefix, "").split(" ") },            
+            arg0: msg.content.split(" ")[0],
+            get prefix() { return botObj.isCaseSensitive? use.server.prefix: use.server.prefix.toLowerCase() },
+            get cmd(){ return msg.content.slice(use.prefix.length).split(" ") },            
 
             getServer: (server) => {
                 var find = servers.find(e => e.id == server.id);
@@ -81,8 +80,16 @@ bots.forEach(botObj => {
         
         // create a scope where the code can use the 'use' object arguments without calling 'use' everytime
         with(use){
-            if(args[0].startsWith(server.prefix)){
-                var find = getCommands().find(cmdE => cmdE.prefix == cmd[0]);
+            console.log(prefix, arg0);
+            if((botObj.isCaseSensitive? arg0: arg0.toLowerCase()).startsWith(prefix)){
+                var find = getCommands().find(cmdE => {
+                    var cmdEl = cmdE.prefix.map(cmdPrefix => botObj.isCaseSensitive? cmdPrefix: cmdPrefix.toLowerCase());
+                    var cmdIn =  botObj.isCaseSensitive? cmd[0]: cmd[0].toLowerCase();
+                    console.log(cmdEl);
+                    console.log(cmdIn);
+
+                    return cmdEl.includes(cmdIn);
+                });
 
                 if(find != undefined){
                     find.func(use);
