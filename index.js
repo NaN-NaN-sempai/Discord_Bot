@@ -78,15 +78,12 @@ bots.forEach(botObj => {
         }
         
         
-        // create a scope where the code can use the 'use' object arguments without calling 'use' everytime
+        // 'with' create a scope where the code can use the object 'use' arguments without calling 'use' everytime
         with(use){
-            console.log(prefix, arg0);
             if((botObj.isCaseSensitive? arg0: arg0.toLowerCase()).startsWith(prefix)){
                 var find = getCommands().find(cmdE => {
                     var cmdEl = cmdE.prefix.map(cmdPrefix => botObj.isCaseSensitive? cmdPrefix: cmdPrefix.toLowerCase());
                     var cmdIn =  botObj.isCaseSensitive? cmd[0]: cmd[0].toLowerCase();
-                    console.log(cmdEl);
-                    console.log(cmdIn);
 
                     return cmdEl.includes(cmdIn);
                 });
@@ -94,7 +91,7 @@ bots.forEach(botObj => {
                 if(find != undefined){
                     find.func(use);
                 } else {
-                    reply("Commando n existe")
+                    reply("Comando não existe")
                 }
             }
         }
