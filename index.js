@@ -39,7 +39,7 @@ bots.forEach(botObj => {
 
     var consoleBotColor = "\x1b[" + (botObj.color || "34");
 
-    console.log("Loading: Bot " + consoleBotColor + botObj.name + "\x1b[0m");
+    console.log("Loading: Bot " + consoleBotColor + botObj.name + "\x1b[0m...");
     bot.login(botObj.token);
 
     bot.on("ready", ()=>{
