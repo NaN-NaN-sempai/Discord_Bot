@@ -2,7 +2,7 @@ var fs = require("fs");
 
 var list = []; 
 
-var itemDir = "./servers/";
+var itemDir = "./botsStuff/servers/";
 fs.readdirSync(itemDir).forEach(folder => {
     if(folder == "index.js") return  
 

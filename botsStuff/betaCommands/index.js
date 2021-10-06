@@ -1,5 +1,4 @@
-var itemDir = "./commands/";
-
+var itemDir = "./botsStuff/betaCommands/";
 
 var fs = require("fs");
 

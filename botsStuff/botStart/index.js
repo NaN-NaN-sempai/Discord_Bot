@@ -1,5 +1,5 @@
 const util = require('minecraft-server-util');
-const setServerEmbed = require("../minecraftMessage/");
+const setServerEmbed = require("../minecraftMessage");
 
 const setStatusFunction = (bot) => {
     util.statusBedrock('nws-server').then((response) => {

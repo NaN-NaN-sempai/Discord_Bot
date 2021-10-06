@@ -10,7 +10,7 @@ module.exports = (bot) => {
             "fields": [
                 {
                     "name": "Desculpe, o Bot *{NWS}* esta Desligado, então não é possivel checar o *Status do Servidor de Minecraft* no momento.",
-                    "value": "Em algum momento o Bot ficará Online novamente e mostrará o **Status do Servidor** novamente."
+                    "value": "Quando o *Bot* ficar Online, ele mostrará o **Status do Servidor** novamente."
                 },
                 {
                     "name": "Status:",

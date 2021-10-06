@@ -1,16 +1,20 @@
 console.clear();
 
-var exitDelay = 1500;
 
+const express = require("express");
 const fs = require("fs");
-const bots = require("./bots");
-var servers = require("./servers");
 
-const setServerEmbed = require("./minecraftMessage/");
+
+// bots
+var exitDelay = 1500;
+const bots = require("./bots");
+var servers = require("./botsStuff/servers");
+
+const setServerEmbed = require("./botsStuff/minecraftMessage");
 var setServerEmbedInterval;
 
 const createAndGetServer = (botObj, server) => {
-    var serverDir = "./servers/" + botObj.name + "/"
+    var serverDir = "./botsStuff/servers/" + botObj.name + "/"
     var serverFileName = server.name.replace(/\s/g, '') + "_" + server.id + ".json";
 
     if (!fs.existsSync(serverDir)) {
@@ -24,7 +28,6 @@ const createAndGetServer = (botObj, server) => {
     });
 }
 
-
 bots.forEach(botObj => {    
     var dicord = require("discord.js");
     var bot = new dicord.Client();
@@ -36,11 +39,11 @@ bots.forEach(botObj => {
 
     var consoleBotColor = "\x1b[" + (botObj.color || "34");
 
-    console.log("Loading: " + consoleBotColor + botObj.name + "\x1b[0m");
+    console.log("Loading: Bot " + consoleBotColor + botObj.name + "\x1b[0m");
     bot.login(botObj.token);
 
     bot.on("ready", ()=>{
-        console.log(consoleBotColor + bot.user.username + "\x1b[0m is now Online!");
+        console.log("Bot " + consoleBotColor + bot.user.username + "\x1b[0m is now Online!");
 
         if(botObj.onStart != "" && botObj.onStart != undefined){
             setServerEmbedInterval = require("./"+botObj.onStart)(bot);
@@ -70,7 +73,7 @@ bots.forEach(botObj => {
                     find = server;
                 }
             
-                servers = require("./servers");
+                servers = require("./botsStuff/servers");
                 return find
             },
             get saveServer() {
@@ -79,7 +82,7 @@ bots.forEach(botObj => {
                 
                     createAndGetServer(botObj, serverFind);
             
-                    servers = require("./servers");
+                    servers = require("./botsStuff/servers");
                 }
             },
             getCommands: () => {
@@ -136,13 +139,38 @@ bots.forEach(botObj => {
 
     process.on('SIGINT', function() {
         if(botObj.onExit != "" && botObj.onExit != undefined){
-            require("./"+botObj.onExit)(bot)
+            try {
+                require("./"+botObj.onExit)(bot);
+            } catch {
+                console.log("\n\x1b[41m Warning! \x1b[0m\nThe Bot " + consoleBotColor + botObj.name + "\x1b[0m has a \x1b[34monExit\x1b[0m script and has closed before fully loading.\nThis may cause some \x1b[31missues\x1b[0m, so aways close the program pressing 'CTRL+C' in the Command Prompt after the '\x1b[34mmyBotName is now Online\x1b[0m' message appears.\n\x1b[41m Warning! \x1b[0m\n");
+            }
         }
 
-        console.log("Closing "+ consoleBotColor + botObj.name + "\x1b[0m" +" Process...");
+        console.log("Killing Bot "+ consoleBotColor + botObj.name + "\x1b[0m" +" Process...");
+
         setTimeout(() => {
-            console.log("\x1b[30m\x1b[47m Closed all Process. \x1b[0m");
+            console.log("\n\x1b[30m\x1b[47m All Process are now Closed. \x1b[0m\n");
             process.exit();
         }, exitDelay * bots.length);
+    });
+});
+
+
+
+// express
+var app = express();
+var port = 80;
+
+app.get('/', (req, res) => {
+    res.sendFile(__dirname + "/");
+});
+
+app.listen(port, () => {
+    console.log('\x1b[35m %s \x1b[0m', "\nExpress started.");
+    var hostname = require('os').hostname();
+    require('dns').lookup(hostname, function (err, add, fam) {
+        console.log("Ip Link:", '\x1b[36m', 'http://'+ add + (port!=80? ":"+port: "") +"/",'\x1b[0m');
+        console.log("Host Name Link:", '\x1b[36m', 'http://'+ hostname + (port!=80? ":"+port: "") +"/",'\x1b[0m');
+        console.log("Localhost Link:", '\x1b[36m', 'http://localhost' + (port!=80? ":"+port: "") +"/",'\x1b[0m\n');
     });
 });
