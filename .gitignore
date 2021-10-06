@@ -4,7 +4,7 @@
 
 /bots/*
 !/bots/index.js
-!/bots/example.json
+!/bots/example.jsonc
 
 /servers/*
 !/servers/index.js
