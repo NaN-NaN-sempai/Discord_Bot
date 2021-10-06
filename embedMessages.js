@@ -51,7 +51,7 @@ online = {
 ofline = {
   "embed": {
     "title": "Servidor de Minecraft Bedrock",
-    "description": "Nós do **{NWS}** disponibilizamos um server de Minecraft Bedrock para os `@internos` do grupo.",
+    "description": "Nós do **{NWS}** disponibilizamos um server de Minecraft Bedrock para os `@✔internos` do grupo.",
     "color": 13959168,
     "timestamp": "2021-10-06T01:21:30.241Z",
     "footer": {

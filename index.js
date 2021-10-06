@@ -1,6 +1,6 @@
 console.clear();
 
-var exitDelay = 2000;
+var exitDelay = 1500;
 
 const fs = require("fs");
 const bots = require("./bots");
@@ -24,6 +24,7 @@ const createAndGetServer = (botObj, server) => {
     });
 }
 
+
 bots.forEach(botObj => {    
     var dicord = require("discord.js");
     var bot = new dicord.Client();
@@ -41,7 +42,7 @@ bots.forEach(botObj => {
     bot.on("ready", ()=>{
         console.log(consoleBotColor + bot.user.username + "\x1b[0m is now Online!");
 
-        if(botObj.onStart != "" || botObj.onStart != undefined){
+        if(botObj.onStart != "" && botObj.onStart != undefined){
             setServerEmbedInterval = require("./"+botObj.onStart)(bot);
         }
     });
@@ -134,14 +135,14 @@ bots.forEach(botObj => {
     });
 
     process.on('SIGINT', function() {
-        if(botObj.onExit != "" || botObj.onExit != undefined){
+        if(botObj.onExit != "" && botObj.onExit != undefined){
             require("./"+botObj.onExit)(bot)
         }
 
-        console.log("Closing Process...");
+        console.log("Closing "+ consoleBotColor + botObj.name + "\x1b[0m" +" Process...");
         setTimeout(() => {
-            console.log(("Process Closed."));
+            console.log("\x1b[30m\x1b[47m Closed all Process. \x1b[0m");
             process.exit();
-        }, exitDelay);
+        }, exitDelay * bots.length);
     });
 });
