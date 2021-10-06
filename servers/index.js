@@ -3,12 +3,20 @@ var fs = require("fs");
 var list = []; 
 
 var itemDir = "./servers/";
-fs.readdirSync(itemDir).forEach(fileName => {
-    if(fileName == "index.js") return  
+fs.readdirSync(itemDir).forEach(folder => {
+    if(folder == "index.js") return  
 
-    var obj = require("./"+fileName);
-
-    list.push(obj);
-})
+    fs.readdirSync(itemDir + folder).forEach(fileName => { 
+        var obj;
+    
+        try {
+            obj = require("./"+fileName);
+        } catch {
+            obj = {};
+        }
+    
+        list.push(obj);
+    });
+});
 
 module.exports = list;

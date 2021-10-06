@@ -1,12 +1,16 @@
+var itemDir = "./commands/";
+
+
 var fs = require("fs");
 
-var list = []; 
+module.exports = () => {
+    var list = []; 
 
-var itemDir = "./commands/";
-fs.readdirSync(itemDir).forEach(fileName => {
-    if(fileName == "index.js" || fileName.includes("example")) return  
+    fs.readdirSync(itemDir).forEach(fileName => {
+        if(fileName == "index.js" || fileName.includes("example")) return  
 
-    list.push(require("./"+fileName));
-})
+        list.push(require("./"+fileName));
+    });
 
-module.exports = list;
+    return list;
+};

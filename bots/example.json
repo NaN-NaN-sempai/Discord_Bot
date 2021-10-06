@@ -25,6 +25,12 @@
             var itemDir = "./myNewLocation/";
     */
 
+    /* on Start, run script when bot logins, to disable it, leav it blank, Example:  "onStart": "" */
+    "onStart": "myFolder/myScript.js",
+
+    /* on Exit, run scrip when bot closes, to disable it, leav it blank, Example:  "onStart": "" */
+    "onExit": "",
+
     /* is case sensitive, turn commands case sensitive if its trus, must be a bool */
     "isCaseSensitive": false
 }
