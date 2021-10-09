@@ -6,7 +6,7 @@ const fs = require("fs");
 
 
 // bots
-var exitDelay = 1500;
+var exitDelay = 1000;
 const bots = require("./bots");
 var servers = require("./botsStuff/servers");
 
@@ -142,7 +142,7 @@ bots.forEach(botObj => {
             try {
                 require("./"+botObj.onExit)(bot);
             } catch {
-                console.log("\n\x1b[41m Warning! \x1b[0m\nThe Bot " + consoleBotColor + botObj.name + "\x1b[0m has a \x1b[34monExit\x1b[0m script and has closed before fully loading.\nThis may cause some \x1b[31missues\x1b[0m, so aways close the program pressing 'CTRL+C' in the Command Prompt after the '\x1b[34mmyBotName is now Online\x1b[0m' message appears.\n\x1b[41m Warning! \x1b[0m\n");
+                console.log("\n\x1b[41m Warning! \x1b[0m\nThe Bot " + consoleBotColor + botObj.name + "\x1b[0m has a \x1b[34monExit\x1b[0m script and has closed before fully loading.\nThis may cause some \x1b[31missues\x1b[0m, so aways close the program pressing 'CTRL+C' in the Command Prompt after the '\x1b[34mmyBotName is now Online\x1b[0m' message shows up.\n\x1b[41m Warning! \x1b[0m\n");
             }
         }
 
