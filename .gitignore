@@ -6,5 +6,5 @@
 !/bots/index.js
 !/bots/example.jsonc
 
-/servers/*
-!/servers/index.js
+/botsStuff/servers/*
+!/botsStuff/servers/index.js

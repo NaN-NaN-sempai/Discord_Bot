@@ -14,7 +14,7 @@ const fs = require("fs");
 
 
 // bots
-var exitDelay = 1500;
+var exitDelay = 1000;
 const bots = require("./bots");
 var servers = require("./botsStuff/servers");
 
