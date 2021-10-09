@@ -151,9 +151,7 @@ bots.forEach(botObj => {
                                 choosingSong: true,
                                 choosingSongList: []
                             });
-                            console.log(use.server.musicBot.users);
-
-                            console.log(123);
+                            
                             use.saveServer(use.server);
                             userFind = use.server.musicBot.users.find(u => u.id == use.user.id);
                         }
