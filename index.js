@@ -1,5 +1,13 @@
 console.clear();
 
+/* 
+download ffmpeg in: https://www.gyan.dev/ffmpeg/builds/#git-master-builds
+
+ffmpeg in C:\ffmpeg\bin
+
+in terminal: npm install @discordjs/opus ffmpeg-static yt-search ytdl-core 
+*/
+
 
 const express = require("express");
 const fs = require("fs");
@@ -23,8 +31,8 @@ const createAndGetServer = (botObj, server) => {
 
     fs.writeFile(serverDir + serverFileName, 
     JSON.stringify(server, null, '\t'),
-    err => {
-        if(err) throw err
+    () => { // error catcher
+        JSON.stringify({}, null, '\t')
     });
 }
 
@@ -60,7 +68,10 @@ bots.forEach(botObj => {
             arg0: msg.content.split(" ")[0],
             get prefix() { return botObj.isCaseSensitive? use.server.prefix: use.server.prefix.toLowerCase() },
             get args(){ return msg.content.split(" ") },     
-            get cmd(){ return msg.content.slice(use.prefix.length).split(" ") },            
+            get cmd(){ return msg.content.slice(use.prefix.length).split(" ") },    
+            
+            bot,
+            botObj,
 
             getServer: (server) => {
                 var find = servers.find(e => e.id == server.id);
@@ -85,12 +96,16 @@ bots.forEach(botObj => {
                     servers = require("./botsStuff/servers");
                 }
             },
-            getCommands: () => {
-                var commandsArr = [];
-                botObj.commandsLocaltion.forEach(e => { 
-                    commandsArr = commandsArr.concat(require("./"+e)()); 
-                });
-                return commandsArr;
+            get getCommands() {
+                return () => {
+                    var commandsArr = [];
+                    botObj.commandsLocaltion.forEach(e => { 
+                        if(e.forServers.includes(use.server.id) || !e.forServers.length){
+                            commandsArr = commandsArr.concat(require("./"+e)()); 
+                        }                        
+                    });
+                    return commandsArr;
+                }
             },
 
             send: str => msg.channel.send(str),
@@ -98,6 +113,7 @@ bots.forEach(botObj => {
 
             get server(){ return use.getServer(msg.guild) },
             channel: msg.channel,
+            voiceChannel: msg.member.voice.channel,
             user: msg.author,
             member: msg.member,
             roles: msg.member.roles.cache
@@ -105,6 +121,7 @@ bots.forEach(botObj => {
 
         // create a scope where the code can use the 'use' object arguments without calling 'use' everytime
         with(use){
+            console.log(getCommands());
             if((botObj.isCaseSensitive? arg0: arg0.toLowerCase()).startsWith(prefix)){
                 var find = getCommands().find(cmdE => {
                     var cmdEl = cmdE.prefix.map(cmdPrefix => botObj.isCaseSensitive? cmdPrefix: cmdPrefix.toLowerCase());
@@ -113,13 +130,13 @@ bots.forEach(botObj => {
                     return cmdEl.includes(cmdIn);
                 });
 
-                if(find != undefined){
+                if(find != undefined ){
                     if(find.forRoles.length){
                         if(roles.find(role => find.forRoles.includes(role.id))){
                             find.func(use);
                             
                         } else {
-                            reply("Desculpe, você não tem a permissão necessária para usar este comando.");
+                            reply("desculpe, você não tem a permissão necessária para usar este comando.");
 
                         }
                     } else {
@@ -127,7 +144,8 @@ bots.forEach(botObj => {
 
                     }
                 } else {
-                    reply("Este comando não existe.");
+                    console.log(find?.forServers, server.id, find?.forServers.includes(server.id));
+                    reply("desculpe, este comando não existe.");
 
                 }
             }
@@ -142,7 +160,7 @@ bots.forEach(botObj => {
             try {
                 require("./"+botObj.onExit)(bot);
             } catch {
-                console.log("\n\x1b[41m Warning! \x1b[0m\nThe Bot " + consoleBotColor + botObj.name + "\x1b[0m has a \x1b[34monExit\x1b[0m script and has closed before fully loading.\nThis may cause some \x1b[31missues\x1b[0m, so aways close the program pressing 'CTRL+C' in the Command Prompt after the '\x1b[34mmyBotName is now Online\x1b[0m' message appears.\n\x1b[41m Warning! \x1b[0m\n");
+                console.log("\n\x1b[41m Warning! \x1b[0m\nThe Bot " + consoleBotColor + botObj.name + "\x1b[0m has a \x1b[34monExit\x1b[0m script and has closed before fully loading.\nThis may cause some \x1b[31missues\x1b[0m, so aways close the program pressing 'CTRL+C' in the Command Prompt after the 'Bot \x1b[34mmyBotName is now Online\x1b[0m' message appears.\n\x1b[41m Warning! \x1b[0m\n");
             }
         }
 
