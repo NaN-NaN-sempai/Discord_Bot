@@ -3,7 +3,8 @@ const ytdl = require("ytdl-core");
 module.exports = async (selection, msg) => {
     if(selection == undefined) return msg.reply("índice não esperado, execute o comando novamente.");
     
-    var stream = ytdl(selection.url, {filter: "audioonly"})
+    msg.server.musicBot.now = selection;
+    var stream = ytdl(selection.url, {filter: "audioonly"});
     msg.musicBot.getUser().connection.play(stream, {
         seek: 0,
         volume: 1,

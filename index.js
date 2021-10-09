@@ -70,8 +70,8 @@ bots.forEach(botObj => {
     });
 
     bot.on("message", msg => {
-        // bot doesn't receive commands from it self
-        if(bot.user.id == msg.author.id) return
+        // bot doesn't receive commands from it self or others bots
+        if(bot.user.id == msg.author.id || msg.author.bot) return
         
         var use = {
             raw: msg,
@@ -85,9 +85,10 @@ bots.forEach(botObj => {
             botObj,
 
             getServer: (server) => {
-                var find = servers.find(e => e.id == server.id);
+                var find = servers.find(e => e.botIdentificator == botObj.token && e.id == msg.guild.id);
             
                 if(find == undefined){
+                    server.botIdentificator = botObj.token;
                     server.prefix = botObj.defaultPrefix;
                     server.musicBot = {
                         now: undefined,
@@ -96,8 +97,6 @@ bots.forEach(botObj => {
 
                         users: []
                     }
-                    
-                    console.log(co++);
 
                     createAndGetServer(botObj, server);
                     find = server;
@@ -146,14 +145,16 @@ bots.forEach(botObj => {
                         var userFind = use.server.musicBot.users.find(u => u.id == use.user.id);
                         
                         if(!userFind){
-                            use.server.musicBot.users.push({
+                            var userList = use.server.musicBot.users;
+                            userList.push({
                                 id: use.user.id,
-                                choosingSong: true,
+                                choosingSong: false,
                                 choosingSongList: []
                             });
 
-                            use.saveServer(use.server);
+                            use.server.musicBot.users = userList;
                             userFind = use.server.musicBot.users.find(u => u.id == use.user.id);
+                            use.saveServer(use.server); 
                         }
 
                         return userFind;

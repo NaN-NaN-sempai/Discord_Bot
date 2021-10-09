@@ -7,7 +7,7 @@ module.exports = {
     prefix: ["stop", "st"], 
     forServers: ["724575010752299079", "471386976570966036"],
     forRoles: [],
-    admin: true,
+    admin: false,
     func: async (msg) => {
         var channel = msg.voiceChannel
 
