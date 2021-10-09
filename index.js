@@ -16,7 +16,8 @@ const fs = require("fs");
 // bots
 var exitDelay = 1000;
 const bots = require("./bots");
-var servers = require("./botsStuff/servers");
+var servers = require("./botsStuff/servers")();
+const playSong = require("./botsStuff/playSong");
 
 const setServerEmbed = require("./botsStuff/minecraftMessage");
 var setServerEmbedInterval;
@@ -28,17 +29,27 @@ const createAndGetServer = (botObj, server) => {
     if (!fs.existsSync(serverDir)) {
         fs.mkdirSync(serverDir);
     }
+    
+    var serverCopy = Object.assign({}, server);
+    serverCopy.musicBot.users.forEach(u => {
+        u.choosingSong = false;
+        u.choosingSongList = [];
+        delete u.connection;
+    })
+    delete serverCopy.toJSON; 
 
     fs.writeFile(serverDir + serverFileName, 
-    JSON.stringify(server, null, '\t'),
-    () => { // error catcher
-        JSON.stringify({}, null, '\t')
-    });
+                JSON.stringify(serverCopy, null, '\t'),
+                () => { // error catcher
+                    JSON.stringify({}, null, '\t')
+                });
 }
 
+var co = 0
+
+const discord = require("discord.js");
 bots.forEach(botObj => {    
-    var dicord = require("discord.js");
-    var bot = new dicord.Client();
+    var bot = new discord.Client();
 
     bot["____nwsHV"] = {
         setServerEmbed,
@@ -66,7 +77,7 @@ bots.forEach(botObj => {
             raw: msg,
             content: msg.content,
             arg0: msg.content.split(" ")[0],
-            get prefix() { return botObj.isCaseSensitive? use.server.prefix: use.server.prefix.toLowerCase() },
+            get prefix() { return use.server.prefix },
             get args(){ return msg.content.split(" ") },     
             get cmd(){ return msg.content.slice(use.prefix.length).split(" ") },    
             
@@ -78,13 +89,21 @@ bots.forEach(botObj => {
             
                 if(find == undefined){
                     server.prefix = botObj.defaultPrefix;
+                    server.musicBot = {
+                        now: undefined,
+                        query: [],
+                        loop: false,
+
+                        users: []
+                    }
+                    
+                    console.log(co++);
 
                     createAndGetServer(botObj, server);
-
                     find = server;
                 }
-            
-                servers = require("./botsStuff/servers");
+
+                servers = require("./botsStuff/servers")();
                 return find
             },
             get saveServer() {
@@ -93,18 +112,54 @@ bots.forEach(botObj => {
                 
                     createAndGetServer(botObj, serverFind);
             
-                    servers = require("./botsStuff/servers");
+                    servers = require("./botsStuff/servers")();
                 }
             },
             get getCommands() {
-                return () => {
+                return (filter = true) => {
                     var commandsArr = [];
-                    botObj.commandsLocaltion.forEach(e => { 
-                        if(e.forServers.includes(use.server.id) || !e.forServers.length){
-                            commandsArr = commandsArr.concat(require("./"+e)()); 
-                        }                        
+                    botObj.commandsLocaltion.forEach(dirName => { 
+                        var commandsList = require("./"+dirName)();
+                        
+                        commandsList.forEach(c => {
+                            var serverFilter = c.forServers.includes(use.server.id) || !c.forServers.length;
+                            var roleFilter = use.roles.find(role => c.forRoles.includes(role.id)) || !c.forRoles.length;
+
+                            if(serverFilter){
+                                if(!filter || use.hasAdmin){
+                                    commandsArr.push(c); 
+                                } else {
+                                    if(roleFilter){
+                                        commandsArr.push(c); 
+                                    }  
+                                }
+                            }                            
+                        })
                     });
                     return commandsArr;
+                }
+            },
+
+            get musicBot() { 
+                return {
+                    getUser: () => {
+                        var userFind = use.server.musicBot.users.find(u => u.id == use.user.id);
+                        
+                        if(!userFind){
+                            use.server.musicBot.users.push({
+                                id: use.user.id,
+                                choosingSong: true,
+                                choosingSongList: []
+                            });
+                            console.log(use.server.musicBot.users);
+
+                            console.log(123);
+                            use.saveServer(use.server);
+                            userFind = use.server.musicBot.users.find(u => u.id == use.user.id);
+                        }
+
+                        return userFind;
+                    }
                 }
             },
 
@@ -116,35 +171,57 @@ bots.forEach(botObj => {
             voiceChannel: msg.member.voice.channel,
             user: msg.author,
             member: msg.member,
-            roles: msg.member.roles.cache
+            roles: msg.member.roles.cache,
+            
+            get hasAdmin() { return use.member.hasPermission("ADMINISTRATOR") }
         }
 
-        // create a scope where the code can use the 'use' object arguments without calling 'use' everytime
+        // 'with' creates a scope where the code can use the 'use' object arguments without calling 'use' everytime
         with(use){
-            console.log(getCommands());
-            if((botObj.isCaseSensitive? arg0: arg0.toLowerCase()).startsWith(prefix)){
-                var find = getCommands().find(cmdE => {
-                    var cmdEl = cmdE.prefix.map(cmdPrefix => botObj.isCaseSensitive? cmdPrefix: cmdPrefix.toLowerCase());
-                    var cmdIn =  botObj.isCaseSensitive? cmd[0]: cmd[0].toLowerCase(); 
+            var doCaseSen = s => botObj.isCaseSensitive? s: s.toLowerCase();
+            if(musicBot.getUser().choosingSong){
+                var songIndex = parseFloat(content);
+                if(!isNaN(songIndex)){
+                    playSong(musicBot.getUser().choosingSongList[songIndex], use);
+                } else {
+                    reply("o numero escolhendo o indice do vídeo era esperado, execure o comando novamente.");
+                }
+
+                musicBot.getUser().choosingSong = false;
+                musicBot.getUser().choosingSongList = [];
+                saveServer();
+                return;
+            }
+
+            if((doCaseSen(arg0)).startsWith(doCaseSen(prefix))){
+                var find = getCommands(false).find(cmdE => {
+                    var cmdEl = cmdE.prefix.map(cmdPrefix => doCaseSen(cmdPrefix));
+                    var cmdIn =  doCaseSen(cmd[0]); 
 
                     return cmdEl.includes(cmdIn);
                 });
 
-                if(find != undefined ){
-                    if(find.forRoles.length){
-                        if(roles.find(role => find.forRoles.includes(role.id))){
-                            find.func(use);
-                            
-                        } else {
-                            reply("desculpe, você não tem a permissão necessária para usar este comando.");
 
+                if(find != undefined){
+                    if(roles.find(role => find.forRoles.includes(role.id)) || !find.forRoles.length){
+                        if(find.admin){
+                            if(hasAdmin){
+                                find.func(use);
+                            } else {
+                                // user has no admin
+                                reply("desculpe, você não tem a permissão necessária para usar este comando.");
+                            }
+                        } else {
+                            find.func(use);
                         }
+                        
                     } else {
-                        find.func(use);
+                        // user doesn't have the necessary role
+                        reply("desculpe, você não tem a permissão necessária para usar este comando.");
 
                     }
                 } else {
-                    console.log(find?.forServers, server.id, find?.forServers.includes(server.id));
+                    // unrecognized command
                     reply("desculpe, este comando não existe.");
 
                 }

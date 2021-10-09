@@ -1,9 +1,11 @@
 module.exports = {
-    name: "Falar",
+    name: "Responder",
     desc: "Repetir oque esta escrito em uma mensagem.",
     get howUse(){ return this.prefix[0] + " meu texto para ser falado."},
     prefix: ["responder", "reply"], 
-    forRoles: ["724580043019255808"],
+    forServers: [],
+    forRoles: [],
+    admin: false,
     func: (msg) => {
         var input = msg.content.slice(msg.arg0.length + 1);
 

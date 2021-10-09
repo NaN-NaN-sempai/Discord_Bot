@@ -1,22 +1,25 @@
-var fs = require("fs");
-
-var list = []; 
-
 var itemDir = "./botsStuff/servers/";
-fs.readdirSync(itemDir).forEach(folder => {
-    if(folder == "index.js") return  
 
-    fs.readdirSync(itemDir + folder).forEach(fileName => { 
-        var obj;
-    
-        try {
-            obj = require("./"+fileName);
-        } catch {
-            obj = {};
-        }
-    
-        list.push(obj);
+var fs = require("fs"); 
+
+module.exports = () => {
+    var list = []; 
+
+    fs.readdirSync(itemDir).forEach(folder => {
+        if(folder == "index.js") return  
+
+        fs.readdirSync(itemDir + folder).forEach(fileName => { 
+            var obj;
+            try {
+                obj = require("./" + folder + "/" + fileName);
+            } catch (e){
+                obj = {};
+                console.log(e);
+            }
+        
+            list.push(obj);
+        });
     });
-});
 
-module.exports = list;
+    return list;
+};

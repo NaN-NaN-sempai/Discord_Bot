@@ -3,7 +3,8 @@ module.exports = {
     desc: "Muda o prefixo de utilização deste servidor.",
     get howUse(){ return this.prefix[0] + " novoPrefixo"},
     prefix: ["prefix"], 
-    forRoles: [],
+    forServers: [],
+    forRoles: [], 
     admin: true,
     func: (msg) => {
         msg.server.prefix = "tete";
