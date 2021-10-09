@@ -14,7 +14,6 @@ module.exports = () => {
                 obj = require("./" + folder + "/" + fileName);
             } catch (e){
                 obj = {};
-                console.log(e);
             }
         
             list.push(obj);

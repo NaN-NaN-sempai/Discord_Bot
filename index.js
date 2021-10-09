@@ -151,7 +151,7 @@ bots.forEach(botObj => {
                                 choosingSong: true,
                                 choosingSongList: []
                             });
-                            
+
                             use.saveServer(use.server);
                             userFind = use.server.musicBot.users.find(u => u.id == use.user.id);
                         }
@@ -177,7 +177,7 @@ bots.forEach(botObj => {
         // 'with' creates a scope where the code can use the 'use' object arguments without calling 'use' everytime
         with(use){
             var doCaseSen = s => botObj.isCaseSensitive? s: s.toLowerCase();
-            if(musicBot.getUser().choosingSong){
+            if(musicBot.getUser()?.choosingSong){
                 var songIndex = parseFloat(content);
                 if(!isNaN(songIndex)){
                     playSong(musicBot.getUser().choosingSongList[songIndex], use);
